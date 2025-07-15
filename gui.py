@@ -3,7 +3,7 @@ from tkinter import font
 
 #create window
 window = tkinter.Tk()
-window.geometry("250x250")
+window.geometry("350x500")
 window.configure(bg="black")
 window.title=("ReniChat")
 
@@ -11,35 +11,44 @@ window.title=("ReniChat")
 bold_font = font.Font(family="Handel Gothic", size=12, weight="bold")
 
 #title at top of screen
-label = tkinter.Label(window, text="ReniChat", bg="black", fg="orange", font=bold_font)
-label.grid(row=0,column=5)
+titlelabel = tkinter.Label(window, text="ReniChat", bg="black", fg="orange", font=bold_font)
+titlelabel.pack(pady=10)
 
-#input field
-frame= tkinter.Frame(window, bg="orange", padx=2, pady=2)
-frame.grid(row=100,column=0)
+#chatbox
+chatbox = tkinter.Frame(window, bg="black")
+chatbox.pack(fill="both", expand=True, padx=10)
 
-entry = tkinter.Entry(frame, bg="black", fg="orange")
-entry.grid(row=100,column=0)
+#scrollbar
+scrollbar = tkinter.Scrollbar(chatbox)
+scrollbar.pack(side="right", fill="y")
 
 #chat display
-chat_display = tkinter.Text(window, bg="black", fg="orange", wrap="word", font=bold_font, state="disabled")
+chatdisplay = tkinter.Text(chatbox, bg="black", fg="orange", yscrollcommand=scrollbar, wrap="word", font=bold_font, state="disabled")
+chatdisplay.pack(fill="both", expand=True)
+scrollbar.config(comman=chatdisplay.yview)
+
+#input field
+entryframe= tkinter.Frame(window, bg="orange", padx=2, pady=2)
+entryframe.pack(pady=10)
+
+entry = tkinter.Entry(entryframe, bg="black", fg="orange", width=30)
+entry.pack(side="left", padx=5)
 
 #send button
-def on_button_click():
-    label = tkinter.Label(window, text="Sent!")
-    label.grid(row=100,column=350)
+def send_message(event=None):
     message = entry.get().strip()
     if message:
-        chat_display.config(state="normal")
-        chat_display.insert("end", f"Hubert: {message}\n")
-        chat_display.config(state="disabled")
-        chat_display.yview("end")  # Auto-scroll to the bottom
+        chatdisplay.config(state="normal")
+        chatdisplay.insert("end", f"Hubert: {message}\n")
+        chatdisplay.config(state="disabled")
+        chatdisplay.yview("end")  
         entry.delete(0, tkinter.END)
-    label = tkinter.Label(window, text=message,bg="black", fg="orange")
-    label.grid(row=50,column=0)
 
-button = tkinter.Button(window, text="Send", command=on_button_click, bg="orange", fg="black")
-button.grid(row=100,column=300)
+sendbutton = tkinter.Button(window, text="Send", command=send_message, bg="orange", fg="black")
+sendbutton.pack(padx=20, pady=20)
 
+#bind send button
+entry.bind("<Return>", send_message)
 
+#run
 window.mainloop()

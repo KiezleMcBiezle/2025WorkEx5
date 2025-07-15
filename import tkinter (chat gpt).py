@@ -7,19 +7,6 @@ window.geometry("350x500")
 window.configure(bg="black")
 window.title("ReniChat")
 
-#login pop up
-def show_login_popup():
-    popup = tk.Toplevel()
-    popup.title("Login")
-    popup.geometry("300x120")
-    popup.configure(bg="black")
-    popup.grab_set()
-
-    tk.Label(popup, text="Enter your name:", bg="black", fg="orange").pack(pady=5)
-    name_entry = tk.Entry(popup, bg="white", fg="black")
-    name_entry.pack()
-
-
 # Font
 bold_font = font.Font(family="Handel Gothic", size=14, weight="bold")
 
@@ -65,5 +52,4 @@ send_button.pack(side="left")
 entry.bind("<Return>", send_message)
 
 # Start GUI
-show_login_popup()
 window.mainloop()
