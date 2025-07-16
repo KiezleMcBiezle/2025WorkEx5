@@ -1,4 +1,6 @@
 import socket
+# import threading to allow for parrallel processing when it comes
+# to sending and recieving messages at the same time
 from threading import Thread
 
 SERVER_HOST = "0.0.0.0" # server IP
@@ -17,7 +19,7 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 # bind the socket
 s.bind((SERVER_HOST, SERVER_PORT))
 # listen for 2 connections
-s.listen(2)
+s.listen(3)
 print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
 
 def listen_for_client(CSocket):
@@ -50,10 +52,10 @@ while True:
     print(f"[+] {client_address} connected.")
     # add the new connected client to connected sockets
     client_sockets.add(client_socket)
-    # start a new thread that listens for each client's messages
-    t = Thread(target=listen_for_client, args=(client_socket,))
+    # Assign a new thread that listens for every new clients messages when they connect
+    t = Thread(target=listen_for_client, args=(client_socket,), daemon=True)
     # make the thread daemon so it ends whenever the main thread ends
-    t.daemon = True
+    # t.daemon = True
     # start the thread
     t.start()
 # close client sockets

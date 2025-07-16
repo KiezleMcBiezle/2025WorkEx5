@@ -17,9 +17,9 @@ colors = [Fore.BLUE, Fore.CYAN, Fore.GREEN, Fore.LIGHTBLACK_EX,
 # choose a random color for the client
 client_color = random.choice(colors)
 
-SERVER_HOST = "192.168.55.19"
+SERVER_HOST = "127.0.0.1" # server IP
 SERVER_PORT = 1234 # server's port
-separator_token = "<SEP>" # we will use this to separate the client name & message
+separator_token = "<SEP>" # Use this to separate the client name & message
 
 # initialize TCP socket
 s = socket.socket()
@@ -31,12 +31,12 @@ name = input("Enter your name: ")
 
 def listen_for_messages():
     while True:
-        message = s.recv(1024).decode()
+        message = s.recv(1024).decode() # listening for message sent by other clients through the server
         print("\n" + message)
 
-# make a thread that listens for messages to this client & print them
+# Assign a thread that listens for messages to this client & print them
 t = Thread(target=listen_for_messages)
-# make thread daemon so ends whenever the main thread ends
+# make thread daemon so it ends whenever the main thread(the program) ends
 t.daemon = True
 
 t.start()
@@ -48,7 +48,7 @@ while True:
     if to_send.lower() == 'q':
         break
     # add the datetime and name of the sender
-    date_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+    date_now = datetime.now().strftime('%d-%m-%Y %H:%M:%S') 
     to_send = f"[{date_now}] {name}{separator_token}{to_send}"
     
     s.sendall(to_send.encode())
