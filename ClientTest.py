@@ -2,55 +2,159 @@ import socket
 import random
 from threading import Thread
 from datetime import datetime
-from colorama import Fore, init, Back
 
-# init colors
-init()
+# SERVER_HOST = "192.168.55.19"
+# SERVER_PORT = 1234 
+# separator_token = "<SEP>" 
 
-# set the available colors
-colors = [Fore.BLUE, Fore.CYAN, Fore.GREEN, Fore.LIGHTBLACK_EX, 
-    Fore.LIGHTBLUE_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTGREEN_EX, 
-    Fore.LIGHTMAGENTA_EX, Fore.LIGHTRED_EX, Fore.LIGHTWHITE_EX, 
-    Fore.LIGHTYELLOW_EX, Fore.MAGENTA, Fore.RED, Fore.WHITE, Fore.YELLOW
-]
+# s = socket.socket()
+# s.connect((SERVER_HOST, SERVER_PORT))
 
-# choose a random color for the client
-client_color = random.choice(colors)
+# username = ""
 
-SERVER_HOST = "192.168.55.19"
-SERVER_PORT = 1234 # server's port
-separator_token = "<SEP>" # we will use this to separate the client name & message
+# def listen_for_messages():
+#     while True:
+#         message = s.recv(1024).decode()
+#         recieve_message(message)
+#         print("\n" + message)
 
-# initialize TCP socket
-s = socket.socket()
-# connect to the server
-s.connect((SERVER_HOST, SERVER_PORT))
-print("[+] Connected.")
+# t = Thread(target=listen_for_messages)
+# t.daemon = True
+# t.start()
 
-name = input("Enter your name: ")
+# while True:
+#     to_send =  input()
+#     if to_send.lower() == 'q':
+#         break
+#     date_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+#     to_send = f"[{date_now}] {username}{separator_token}{to_send}"
+#     s.sendall(to_send.encode())
+# s.close()
 
-def listen_for_messages():
-    while True:
-        message = s.recv(1024).decode()
-        print("\n" + message)
+import tkinter
+from tkinter import font
+import socket
+import threading
 
-# make a thread that listens for messages to this client & print them
-t = Thread(target=listen_for_messages)
-# make thread daemon so ends whenever the main thread ends
-t.daemon = True
+#main -------------------------------
+def openchat():
+    #create window
+    window = tkinter.Tk()
+    window.geometry("350x500")
+    window.configure(bg="black")
+    window.title("ReniChat")
 
-t.start()
+    #font
+    bold_font = font.Font(family="Handel Gothic", size=12, weight="bold")
 
-while True:
-    # input message to send to the server
-    to_send =  input()
-    # way to exit the program
-    if to_send.lower() == 'q':
-        break
-    # add the datetime and name of the sender
-    date_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-    to_send = f"[{date_now}] {name}{separator_token}{to_send}"
-    
-    s.sendall(to_send.encode())
+    #title at top of screen
+    titlelabel = tkinter.Label(window, text="ReniChat", bg="black", fg="orange", font=bold_font)
+    titlelabel.pack(pady=10)
 
-s.close()
+    #chatbox
+    chatbox = tkinter.Frame(window, bg="black")
+    chatbox.pack(fill="both", expand=True, padx=10)
+
+    #scrollbar
+    scrollbar = tkinter.Scrollbar(chatbox)
+    scrollbar.pack(side="right", fill="y")
+
+    #chat display
+    chatdisplay = tkinter.Text(chatbox, bg="black", fg="orange", yscrollcommand=scrollbar.set, wrap="word", font=bold_font, state="disabled")
+    chatdisplay.pack(fill="both", expand=True)
+    scrollbar.config(command=chatdisplay.yview)
+
+    #input field
+    entryframe= tkinter.Frame(window, bg="orange", padx=2, pady=2)
+    entryframe.pack(pady=10)
+
+    entry = tkinter.Entry(entryframe, bg="black", fg="orange", width=30)
+    entry.pack(side="left", padx=5)
+
+
+    #send button
+    buttonframe = tkinter.Frame(window, bg="black")
+    buttonframe.pack(padx=5, pady=20)
+
+    def display_message(event = None):
+        message = entry.get().strip()
+        if message:
+            chatdisplay.config(state="normal")
+            chatdisplay.insert("end", f"{username1}: {message}\n")
+            chatdisplay.config(state="disabled")
+            chatdisplay.yview("end")  
+            entry.delete(0, tkinter.END)
+
+    def recieve_message(message, event = None):
+        chatdisplay.config(state="normal")
+        chatdisplay.insert("end", f"{username1}: {message}\n")
+        chatdisplay.config(state="disabled")
+        chatdisplay.yview("end")  
+        entry.delete(0, tkinter.END) 
+
+    sendbutton = tkinter.Button(buttonframe, text="Send", command=display_message, bg="orange", fg="black")
+    sendbutton.pack(side="left", padx=10)
+
+    #bind send button
+    entry.bind("<Return>", display_message)
+
+    SERVER_HOST = "192.168.55.19"
+    SERVER_PORT = 1234 
+    separator_token = "<SEP>" 
+
+    s = socket.socket()
+    s.connect((SERVER_HOST, SERVER_PORT))
+
+    username = ""
+
+    def listen_for_messages():
+        while True:
+            message = s.recv(1024).decode()
+            recieve_message(message)
+            print("\n" + message)
+
+    listen = Thread(target=listen_for_messages)
+    listen.daemon = True
+    listen.start()
+
+    def send_messages():
+        to_send =  input()
+        if to_send.lower() == 'q':
+            return
+        date_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+        to_send = f"[{date_now}] {username}{separator_token}{to_send}"
+        display_message()
+        s.sendall(to_send.encode())
+
+    send = Thread(target=send_messages)
+    send.daemon = True
+    send.start()    
+    s.close()
+    window.mainloop()
+
+#input username window ------------------------
+username1=""
+
+window2 = tkinter.Tk()
+#title
+window2.title("Username")
+#heading
+window2label = tkinter.Label(window2, text="Enter your username: ")
+window2label.pack()
+#input field
+username = tkinter.Entry(window2)
+username.pack()
+
+#button
+def save_username(event=None):
+    global username1
+    username1 = username.get()
+    username = username1
+    window2.destroy()
+    openchat()
+ 
+savebutton = tkinter.Button(window2, text="Save", command=save_username)
+savebutton.pack()
+username.bind("<Return>", save_username)
+window2.mainloop()
+
