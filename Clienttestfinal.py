@@ -4,6 +4,8 @@ from tkinter import font
 import socket
 from threading import Thread
 from datetime import datetime
+import os
+from tkinter import filedialog
 
 #main -------------------------------
 SERVER_HOST = "127.0.0.1"
@@ -53,7 +55,11 @@ def openchat():
     buttonframe = tkinter.Frame(window, bg="black")
     buttonframe.pack(padx=5, pady=20)
 
-    def send_message(event=None):
+    # #send image button
+    # send_image_button = tkinter.Button(buttonframe, text="Send Image", command=send_image, bg="orange", fg="black")
+    # send_image_button.pack(side="left", padx=10)
+
+    def send_message():
         message = entry.get().strip()
         if message:
             date_now = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
@@ -64,6 +70,11 @@ def openchat():
 
             to_send = f"[{date_now}] {username1}: {message}"
             s.sendall(to_send.encode())
+    # def send_image():
+    #     filepath = filedialog.askopenfilename(
+    #         title="Select image to send:",
+    #         filetypes=[]
+    #     )
 
     def listen_for_messages():
         while True:
