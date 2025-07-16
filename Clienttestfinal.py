@@ -55,10 +55,6 @@ def openchat():
     buttonframe = tkinter.Frame(window, bg="black")
     buttonframe.pack(padx=5, pady=20)
 
-    # #send image button
-    # send_image_button = tkinter.Button(buttonframe, text="Send Image", command=send_image, bg="orange", fg="black")
-    # send_image_button.pack(side="left", padx=10)
-
     def send_message():
         message = entry.get().strip()
         if message:
@@ -70,11 +66,6 @@ def openchat():
 
             to_send = f"[{date_now}] {username1}: {message}"
             s.sendall(to_send.encode())
-    # def send_image():
-    #     filepath = filedialog.askopenfilename(
-    #         title="Select image to send:",
-    #         filetypes=[]
-    #     )
 
     def listen_for_messages():
         while True:
