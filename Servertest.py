@@ -2,11 +2,11 @@ import socket
 from threading import Thread
 
 SERVER_HOST = "0.0.0.0" # server IP
-SERVER_PORT = 8888 # port number
-separator_token = "SEPERATE" # we will use this to separate the client name & message
+SERVER_PORT = 1234 # port number
+separator_token = "<SEP>" # we will use this to separate the client name & message
 
 # initialize list/set of all connected client's sockets
-client_sockets = list()
+client_sockets = set()
 # create a TCP socket
 s = socket.socket()
 # make the port as reusable port
@@ -22,7 +22,7 @@ print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
 
 def listen_for_client(CSocket):
     """
-    This function keep listening for a message from `cs` socket
+    Function keeps listening for a message from `cs` socket
     Whenever a message is received, broadcast it to all other connected clients
     """
     while True:
@@ -36,9 +36,8 @@ def listen_for_client(CSocket):
             print(f"[!] Error: {e}")
             client_sockets.remove(CSocket)
         else:
-            # if we received a message, replace the <SEP> 
-            # token with ": " for nice printing
-            msg = msg.replace(separator_token, ":")
+            # if we received a message replace the seperator token
+            msg = msg.replace(separator_token, ": ")
         # iterate over all connected sockets
         for client_socket in client_sockets:
             # and send the message
